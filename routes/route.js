@@ -3,6 +3,10 @@ module.exports = (app) => {
     const GenderController = require("../controllers/GenderController.js");
 
     app.get("/person", PersonController.getAll);
+    app.get("/person/:id", PersonController.getOne);
+    app.post("/person/create", PersonController.create);
+    app.put("/person/update/:id", PersonController.update);
+    app.delete("/person/delete/:id", PersonController.delete);
 
     app.get("/gender", GenderController.getAll);
     app.get("/gender/:id", GenderController.getOne);

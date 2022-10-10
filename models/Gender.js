@@ -14,4 +14,4 @@ const genderSchema = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("gender", genderSchema, "gender");
+module.exports = mongoose.model("genders", genderSchema);

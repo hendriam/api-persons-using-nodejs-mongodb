@@ -5,7 +5,7 @@ const express = require("express"),
 
 const mongoose = require("mongoose");
 const dbConfig = require("./configs/database.js");
-// mongoose.Promise = global.Promise;
+mongoose.Promise = global.Promise;
 
 // Connecting to the database
 mongoose

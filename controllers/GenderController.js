@@ -14,6 +14,15 @@ exports.getAll = async (req, res) => {
 
 exports.getOne = async (req, res) => {
     let _data = await getOneGender(req.params.id);
+
+    // if data null send this response
+    if (_data == null) {
+        return res.status(404).send({
+            message: `not found`,
+            data: null,
+        });
+    }
+
     let stat = {
         message: "oke",
         data: _data,
@@ -29,10 +38,18 @@ exports.create = async (req, res) => {
         updatedAt: moment().format("YYYY-MM-DD HH:mm:ss"),
     };
 
-    let created = await createGender(data);
+    // check name is already ?
+    let checkName = await _checkName(data.name);
+    if (checkName != null) {
+        return res.status(422).send({
+            message: `name is already, please change name`,
+            data: null,
+        });
+    }
 
+    let created = await createGender(data);
     if (created == "ERROR") {
-        return res.status(201).send({
+        return res.status(422).send({
             message: `create failed`,
             data: null,
         });
@@ -51,26 +68,25 @@ exports.update = async (req, res) => {
         updatedAt: moment().format("YYYY-MM-DD HH:mm:ss"),
     };
 
-    let created = await updateGender(req.params.id, data);
-
-    if (created == "ERROR") {
-        return res.status(201).send({
+    let updated = await updateGender(req.params.id, data);
+    if (updated == "ERROR") {
+        return res.status(422).send({
             message: `update failed`,
             data: null,
         });
     }
-    console.log(`update gender success ${JSON.stringify(created)}`);
+    console.log(`update gender success ${JSON.stringify(updated)}`);
 
     return res.status(200).send({
         message: "update success",
-        data: created,
+        data: updated,
     });
 };
 
 exports.delete = async (req, res) => {
     let deleted = await deleteGender(req.params.id);
     if (deleted == "ERROR") {
-        return res.status(201).send({
+        return res.status(422).send({
             message: `delete failed`,
             data: null,
         });
@@ -98,6 +114,18 @@ function getGender() {
 function getOneGender(_id) {
     return new Promise(function (resolve, reject) {
         Gender.findOne({ _id: _id })
+            .then((data) => {
+                resolve(data);
+            })
+            .catch((err) => {
+                resolve("ERROR");
+            });
+    });
+}
+
+function _checkName(_name) {
+    return new Promise(function (resolve, reject) {
+        Gender.findOne({ name: _name })
             .then((data) => {
                 resolve(data);
             })
